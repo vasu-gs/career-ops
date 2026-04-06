@@ -1,0 +1,354 @@
+# Portal Scanner Configuration — ZukoJobs
+# Used by /career-ops scan to discover new offers automatically.
+#
+# Strategy (3 levels):
+#   1. Playwright → careers_url of each company (real-time, reliable)
+#   2. Greenhouse API → structured JSON (fast, Greenhouse-only)
+#   3. WebSearch with site: filters (broad discovery, may be stale)
+#
+# IMPORTANT: Each company in tracked_companies MUST have careers_url.
+
+# -- Title filter --
+# The scanner uses these keywords to decide if a title is relevant.
+# At least 1 positive must match AND 0 negatives must match (case-insensitive).
+
+title_filter:
+  positive:
+    - Software Engineer
+    - AI Engineer
+    - ML Engineer
+    - Machine Learning
+    - Forward Deployed
+    - Solutions Engineer
+    - Product Manager
+    - Program Manager
+    - Applied AI
+    - LLM
+    - Platform Engineer
+    # -- Also match broader AI/ML signals --
+    - AI
+    - ML
+    - LLMOps
+    - MLOps
+    - Voice AI
+    - Conversational AI
+    - Speech
+    - Agent
+    - Agentic
+    - GenAI
+    - NLP
+    - Solutions Architect
+    - Customer Engineer
+    - Integration Engineer
+  negative:
+    - Intern
+    - Junior
+    - Associate
+    - Contractor
+    - Part-time
+  seniority_boost:
+    - Senior
+    - Staff
+    - Principal
+    - Lead
+    - Head
+    - Director
+
+# -- Search queries --
+# Each query triggers a WebSearch. Use site: to filter by portal.
+
+search_queries:
+  # -- Ashby --
+  - name: Ashby — AI Engineer
+    query: 'site:jobs.ashbyhq.com "AI Engineer" OR "LLM Engineer" OR "Forward Deployed" remote'
+    enabled: true
+
+  - name: Ashby — Solutions Engineer & Architect
+    query: 'site:jobs.ashbyhq.com "Solutions Engineer" OR "Solutions Architect" AI remote'
+    enabled: true
+
+  - name: Ashby — Platform Engineer
+    query: 'site:jobs.ashbyhq.com "Platform Engineer" OR "ML Engineer" remote'
+    enabled: true
+
+  - name: Ashby — Product Manager AI
+    query: 'site:jobs.ashbyhq.com "Product Manager" AI OR LLM remote'
+    enabled: true
+
+  # -- Greenhouse --
+  - name: Greenhouse — AI & ML Engineer
+    query: 'site:boards.greenhouse.io OR site:job-boards.greenhouse.io "AI Engineer" OR "ML Engineer" OR "Machine Learning" remote'
+    enabled: true
+
+  - name: Greenhouse — Forward Deployed & Solutions
+    query: 'site:boards.greenhouse.io OR site:job-boards.greenhouse.io "Forward Deployed" OR "Solutions Engineer" OR "Applied AI" remote'
+    enabled: true
+
+  - name: Greenhouse — Software Engineer AI
+    query: 'site:boards.greenhouse.io OR site:job-boards.greenhouse.io "Software Engineer" LLM OR "Applied AI" OR "AI Platform" remote'
+    enabled: true
+
+  - name: Greenhouse — Platform Engineer
+    query: 'site:boards.greenhouse.io OR site:job-boards.greenhouse.io "Platform Engineer" AI OR ML remote'
+    enabled: true
+
+  # -- Lever --
+  - name: Lever — AI Engineer & FDE
+    query: 'site:jobs.lever.co "AI Engineer" OR "Forward Deployed" OR "ML Engineer" remote'
+    enabled: true
+
+  - name: Lever — Solutions & Platform
+    query: 'site:jobs.lever.co "Solutions Engineer" OR "Platform Engineer" AI remote'
+    enabled: true
+
+  # -- Wellfound (startups) --
+  - name: Wellfound — AI Roles
+    query: 'site:wellfound.com "AI Engineer" OR "ML Engineer" OR "LLM" OR "Applied AI" remote'
+    enabled: true
+
+  # -- FDE specific (cross-portal) --
+  - name: FDE & Deployed Engineer — All portals
+    query: '"Forward Deployed Engineer" OR "Deployed Engineer" AI site:job-boards.greenhouse.io OR site:jobs.ashbyhq.com OR site:jobs.lever.co'
+    enabled: true
+
+# -- Tracked companies --
+# Companies whose career pages are checked directly.
+# scan_method: playwright (default), websearch, greenhouse_api
+# For Greenhouse companies, add api: field for faster structured JSON access.
+
+tracked_companies:
+
+  # =============================================
+  # AI LABS
+  # =============================================
+
+  - name: Anthropic
+    careers_url: https://job-boards.greenhouse.io/anthropic
+    api: https://boards-api.greenhouse.io/v1/boards/anthropic/jobs
+    ats_type: greenhouse
+    notes: "Leading safety-focused AI lab."
+    enabled: true
+
+  - name: OpenAI
+    careers_url: https://openai.com/careers
+    ats_type: custom
+    scan_method: websearch
+    scan_query: 'site:openai.com/careers "Software Engineer" OR "AI Engineer" OR "Forward Deployed" OR "Platform"'
+    notes: "GPT, ChatGPT, API."
+    enabled: true
+
+  - name: Mistral AI
+    careers_url: https://jobs.lever.co/mistral
+    ats_type: lever
+    notes: "Paris. European frontier AI lab."
+    enabled: true
+
+  - name: Cohere
+    careers_url: https://jobs.ashbyhq.com/cohere
+    ats_type: ashby
+    notes: "Enterprise LLM APIs. Toronto + remote."
+    enabled: true
+
+  - name: Databricks
+    careers_url: https://job-boards.greenhouse.io/databricks
+    api: https://boards-api.greenhouse.io/v1/boards/databricks/jobs
+    ats_type: greenhouse
+    notes: "Data + AI platform. Mosaic ML acquisition."
+    enabled: true
+
+  - name: Scale AI
+    careers_url: https://jobs.lever.co/scaleai
+    ats_type: lever
+    notes: "AI data and RLHF platform."
+    enabled: true
+
+  - name: Hugging Face
+    careers_url: https://apply.workable.com/huggingface/
+    ats_type: wellfound
+    scan_method: websearch
+    scan_query: 'site:apply.workable.com/huggingface'
+    notes: "ML hub & open-source models. Paris / NYC / Remote."
+    enabled: true
+
+  # =============================================
+  # VOICE AI
+  # =============================================
+
+  - name: ElevenLabs
+    careers_url: https://jobs.ashbyhq.com/elevenlabs
+    ats_type: ashby
+    notes: "Voice AI / TTS leader."
+    enabled: true
+
+  - name: Deepgram
+    careers_url: https://jobs.ashbyhq.com/deepgram
+    ats_type: ashby
+    notes: "STT/TTS APIs."
+    enabled: true
+
+  - name: Hume AI
+    careers_url: https://job-boards.greenhouse.io/humeai
+    api: https://boards-api.greenhouse.io/v1/boards/humeai/jobs
+    ats_type: greenhouse
+    notes: "Empathic voice AI. NYC."
+    enabled: true
+
+  - name: Vapi
+    careers_url: https://jobs.ashbyhq.com/vapi
+    ats_type: ashby
+    notes: "Voice AI infrastructure."
+    enabled: true
+
+  # =============================================
+  # TECH PLATFORMS
+  # =============================================
+
+  - name: Vercel
+    careers_url: https://job-boards.greenhouse.io/vercel
+    api: https://boards-api.greenhouse.io/v1/boards/vercel/jobs
+    ats_type: greenhouse
+    notes: "Frontend cloud, AI SDK, v0.dev."
+    enabled: true
+
+  - name: Supabase
+    careers_url: https://jobs.ashbyhq.com/supabase
+    ats_type: ashby
+    notes: "Open-source Firebase alternative."
+    enabled: true
+
+  - name: Retool
+    careers_url: https://jobs.ashbyhq.com/retool
+    ats_type: ashby
+    notes: "Internal tools platform. Popularized Deployed Engineer role."
+    enabled: true
+
+  - name: Temporal
+    careers_url: https://job-boards.greenhouse.io/temporal
+    api: https://boards-api.greenhouse.io/v1/boards/temporal/jobs
+    ats_type: greenhouse
+    notes: "Workflow orchestration platform."
+    enabled: true
+
+  - name: Cloudflare
+    careers_url: https://job-boards.greenhouse.io/cloudflare
+    api: https://boards-api.greenhouse.io/v1/boards/cloudflare/jobs
+    ats_type: greenhouse
+    notes: "Edge network, Workers AI."
+    enabled: true
+
+  - name: Render
+    careers_url: https://jobs.ashbyhq.com/render
+    ats_type: ashby
+    notes: "Cloud application platform."
+    enabled: true
+
+  # =============================================
+  # AI-FORWARD
+  # =============================================
+
+  - name: Palantir
+    careers_url: https://jobs.lever.co/palantir
+    ats_type: lever
+    notes: "FDE roles. AIP AI platform."
+    enabled: true
+
+  - name: Anduril
+    careers_url: https://job-boards.greenhouse.io/anduril
+    api: https://boards-api.greenhouse.io/v1/boards/anduril/jobs
+    ats_type: greenhouse
+    notes: "Defence technology & AI."
+    enabled: true
+
+  - name: Cursor
+    careers_url: https://jobs.ashbyhq.com/cursor
+    ats_type: ashby
+    notes: "AI code editor. Rapid growth."
+    enabled: true
+
+  - name: Replit
+    careers_url: https://job-boards.greenhouse.io/replit
+    api: https://boards-api.greenhouse.io/v1/boards/replit/jobs
+    ats_type: greenhouse
+    notes: "AI-powered code and deployment platform."
+    enabled: true
+
+  - name: Perplexity
+    careers_url: https://job-boards.greenhouse.io/perplexity
+    api: https://boards-api.greenhouse.io/v1/boards/perplexity/jobs
+    ats_type: greenhouse
+    notes: "AI search engine."
+    enabled: true
+
+  - name: Together AI
+    careers_url: https://jobs.lever.co/together
+    ats_type: lever
+    notes: "Open-source AI inference platform."
+    enabled: true
+
+  # =============================================
+  # ENTERPRISE AI
+  # =============================================
+
+  - name: Salesforce
+    careers_url: https://careers.salesforce.com
+    ats_type: custom
+    scan_method: websearch
+    scan_query: 'site:careers.salesforce.com "Forward Deployed" OR "AI Engineer" OR "Agentforce" OR "Software Engineer"'
+    notes: "Agentforce AI agents platform."
+    enabled: true
+
+  - name: Datadog
+    careers_url: https://job-boards.greenhouse.io/datadog
+    api: https://boards-api.greenhouse.io/v1/boards/datadog/jobs
+    ats_type: greenhouse
+    notes: "Cloud monitoring and observability."
+    enabled: true
+
+  - name: Snowflake
+    careers_url: https://job-boards.greenhouse.io/snowflake
+    api: https://boards-api.greenhouse.io/v1/boards/snowflake/jobs
+    ats_type: greenhouse
+    notes: "Cloud data platform with Cortex AI."
+    enabled: true
+
+  - name: MongoDB
+    careers_url: https://job-boards.greenhouse.io/mongodb
+    api: https://boards-api.greenhouse.io/v1/boards/mongodb/jobs
+    ats_type: greenhouse
+    notes: "Document database with vector search."
+    enabled: true
+
+  - name: Elastic
+    careers_url: https://jobs.lever.co/elastic
+    ats_type: lever
+    notes: "Search, observability, and AI."
+    enabled: true
+
+  # =============================================
+  # INFRA / DEVTOOLS
+  # =============================================
+
+  - name: HashiCorp
+    careers_url: https://jobs.lever.co/hashicorp
+    ats_type: lever
+    notes: "Infrastructure automation (Terraform, Vault). IBM acquired."
+    enabled: true
+
+  - name: Grafana Labs
+    careers_url: https://job-boards.greenhouse.io/grafanalabs
+    api: https://boards-api.greenhouse.io/v1/boards/grafanalabs/jobs
+    ats_type: greenhouse
+    notes: "Observability platform."
+    enabled: true
+
+  - name: Neon
+    careers_url: https://jobs.ashbyhq.com/neon
+    ats_type: ashby
+    notes: "Serverless Postgres."
+    enabled: true
+
+  - name: Railway
+    careers_url: https://jobs.ashbyhq.com/railway
+    ats_type: ashby
+    notes: "Developer cloud platform."
+    enabled: true
